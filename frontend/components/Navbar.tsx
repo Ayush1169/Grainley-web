@@ -12,7 +12,7 @@ export default function Navbar() {
   const [wishlistCount, setWishlistCount] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<boolean>(false);
   const router = useRouter();
 
  useEffect(() => {
