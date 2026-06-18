@@ -6,10 +6,12 @@ import Image from "next/image";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { Trash2, ShoppingBag, Minus, Plus, ArrowLeft, Tag } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function CartPage() {
   const [cart, setCart] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => { fetchCart(); }, []);
 
@@ -191,9 +193,12 @@ export default function CartPage() {
                   </div>
                 </div>
 
-                <button className="w-full mt-5 bg-[#2d6a2d] hover:bg-[#235423] text-white font-bold py-3 rounded-xl text-sm transition shadow-sm">
-                  Proceed to Checkout
-                </button>
+                <button
+  onClick={() => router.push("/checkout")}
+  className="w-full mt-5 bg-[#2d6a2d] hover:bg-[#235423] text-white font-bold py-3 rounded-xl text-sm transition shadow-sm"
+>
+  Proceed to Checkout
+</button>
 
                 <div className="flex items-center justify-center gap-2 mt-3 text-gray-400 text-xs">
                   🔒 Secure & Encrypted Payment
