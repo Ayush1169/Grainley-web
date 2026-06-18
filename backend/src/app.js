@@ -13,7 +13,10 @@ const addressRoutes = require(  "./routes/addressRoutes");
 const app = express();
 
 app.use(cors({
-  origin: "http://localhost:3000",
+  origin: [
+    "http://localhost:3000",
+    "https://grainley-web-uny7.vercel.app"
+  ],
   credentials: true
 }));
 
