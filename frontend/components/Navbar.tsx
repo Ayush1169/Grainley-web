@@ -29,10 +29,10 @@ export default function Navbar() {
       const token = localStorage.getItem("token");
       if (!token) return;
     
-      const cartRes = await axios.get("http://localhost:5000/api/cart", {
+      const cartRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/cart`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const wishlistRes = await axios.get("http://localhost:5000/api/wishlist", {
+      const wishlistRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/wishlist`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setCartCount(cartRes.data.cart?.length || 0);

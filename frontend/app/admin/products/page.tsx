@@ -21,7 +21,7 @@ export default function ProductsPage() {
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/products");
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/products`);
       setProducts(res.data.products);
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Failed to fetch products");
@@ -36,7 +36,7 @@ export default function ProductsPage() {
       setDeletingId(productId);
       const token = localStorage.getItem("token");
       const res = await axios.delete(
-        `http://localhost:5000/api/products/${productId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/products/${productId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       toast.success(res.data.message || "Product deleted");

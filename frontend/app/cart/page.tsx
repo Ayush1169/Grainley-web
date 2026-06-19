@@ -18,7 +18,7 @@ export default function CartPage() {
   const fetchCart = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:5000/api/cart", {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/cart`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setCart(res.data.cart);
@@ -29,7 +29,7 @@ export default function CartPage() {
   const removeItem = async (id: string) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:5000/api/cart/${id}`, {
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/cart/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.success("Item removed");
@@ -41,7 +41,7 @@ export default function CartPage() {
     if (quantity < 1) return;
     try {
       const token = localStorage.getItem("token");
-      await axios.put(`http://localhost:5000/api/cart/${id}`, { quantity }, {
+      await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/cart/${id}`, { quantity }, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchCart();

@@ -16,7 +16,7 @@ export default function CategoriesPage() {
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/categories");
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/categories`);
       setCategories(res.data.categories);
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Failed to fetch categories");
@@ -30,7 +30,7 @@ export default function CategoriesPage() {
     try {
       setDeletingId(id);
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:5000/api/categories/${id}`, {
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/categories/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.success("Category deleted");
@@ -49,7 +49,7 @@ export default function CategoriesPage() {
       setSubmitting(true);
       const token = localStorage.getItem("token");
       const res = await axios.post(
-        "http://localhost:5000/api/categories",
+        `${process.env.NEXT_PUBLIC_API_URL}/categories`,
         { name, description },
         { headers: { Authorization: `Bearer ${token}` } }
       );

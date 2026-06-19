@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import imageCompression from "browser-image-compression";
 import {
   Package,
   ImagePlus,
@@ -53,7 +54,7 @@ export default function CreateProductPage() {
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/categories");
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/categories`);
       setCategories(res.data.categories);
     } catch (err) {
       console.error(err);
@@ -66,12 +67,31 @@ export default function CreateProductPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setImage(file);
-    setPreview(URL.createObjectURL(file));
-  };
+  const handleImage = async (
+  e: React.ChangeEvent<HTMLInputElement>
+) => {
+  const file = e.target.files?.[0];
+
+  if (!file) return;
+
+  try {
+    const compressedFile = await imageCompression(file, {
+      maxSizeMB: 3,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
+    });
+
+    setImage(compressedFile as File);
+    setPreview(URL.createObjectURL(compressedFile));
+
+    toast.success(
+      `Compressed ${(file.size / 1024 / 1024).toFixed(1)}MB → ${(compressedFile.size / 1024 / 1024).toFixed(1)}MB`
+    );
+  } catch (error) {
+    console.error(error);
+    toast.error("Image compression failed");
+  }
+};
 
   const removeImage = () => {
     setImage(null);
@@ -91,7 +111,7 @@ export default function CreateProductPage() {
       });
       if (image) data.append("image", image);
 
-      const res = await axios.post("http://localhost:5000/api/products", data, {
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/products`, data, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
@@ -163,7 +183,9 @@ export default function CreateProductPage() {
                 >
                   <ImagePlus size={28} className="group-hover:scale-110 transition" />
                   <p className="text-sm font-medium">Click to upload</p>
-                  <p className="text-xs">PNG, JPG up to 5MB</p>
+                  <p className="text-xs">
+  PNG, JPG (Auto compressed before upload)
+</p>
                 </button>
               )}
               <input

@@ -41,7 +41,7 @@ export default function EditProductPage() {
 
   const fetchProduct = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/products/${id}`);
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/products/${id}`);
       const p = res.data.product;
       setFormData({
         name: p.name || "",
@@ -68,7 +68,7 @@ export default function EditProductPage() {
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/categories");
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/categories`);
       setCategories(res.data.categories);
     } catch (err) {
       console.error(err);
@@ -105,11 +105,11 @@ export default function EditProductPage() {
         const data = new FormData();
         Object.entries(formData).forEach(([key, val]) => data.append(key, String(val)));
         data.append("image", image);
-        await axios.put(`http://localhost:5000/api/products/${id}`, data, {
+        await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/products/${id}`, data, {
           headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
         });
       } else {
-        await axios.put(`http://localhost:5000/api/products/${id}`, formData, {
+        await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/products/${id}`, formData, {
           headers: { Authorization: `Bearer ${token}` },
         });
       }

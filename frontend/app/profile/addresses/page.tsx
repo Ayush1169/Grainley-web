@@ -32,7 +32,7 @@ export default function AddressPage() {
   const fetchAddresses = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:5000/api/addresses", {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/addresses`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setAddresses(res.data.addresses);
@@ -86,7 +86,7 @@ export default function AddressPage() {
       setSaving(true);
       const token = localStorage.getItem("token");
       await axios.post(
-        "http://localhost:5000/api/addresses",
+        `${process.env.NEXT_PUBLIC_API_URL}/addresses`,
         { fullName, mobile, houseNo, street, landmark, city, state: stateName, pincode },
         { headers: { Authorization: `Bearer ${token}` } }
       );

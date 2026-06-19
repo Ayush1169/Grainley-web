@@ -26,7 +26,7 @@ export default function CheckoutPage() {
   const fetchCart = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:5000/api/cart", {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/cart`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setCart(res.data.cart || []);
@@ -36,7 +36,7 @@ export default function CheckoutPage() {
   const fetchAddresses = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:5000/api/addresses", {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/addresses`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setAddresses(res.data.addresses || []);
@@ -66,7 +66,7 @@ export default function CheckoutPage() {
       }));
 
       await axios.post(
-        "http://localhost:5000/api/orders",
+        `${process.env.NEXT_PUBLIC_API_URL}/orders`,
         {
           products,
           totalAmount,

@@ -33,7 +33,7 @@ export default function ProductDetails() {
       setAddingCart(true);
       const token = localStorage.getItem("token");
       if (!token) { toast.error("Please login first"); return; }
-      await axios.post("http://localhost:5000/api/cart", { productId: product._id }, {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/cart`, { productId: product._id }, {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.success("Added to cart!");
@@ -47,7 +47,7 @@ export default function ProductDetails() {
       setAddingWishlist(true);
       const token = localStorage.getItem("token");
       if (!token) { toast.error("Please login first"); return; }
-      await axios.post("http://localhost:5000/api/wishlist", { productId: product._id }, {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/wishlist`, { productId: product._id }, {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.success("Added to wishlist!");

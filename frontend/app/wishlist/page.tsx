@@ -17,7 +17,7 @@ export default function WishlistPage() {
   const fetchWishlist = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:5000/api/wishlist", {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/wishlist`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setWishlist(res.data.wishlist);
@@ -29,7 +29,7 @@ export default function WishlistPage() {
     try {
       setRemovingId(id);
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:5000/api/wishlist/${id}`, {
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/wishlist/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.success("Removed from wishlist");
@@ -42,7 +42,7 @@ export default function WishlistPage() {
     try {
       const token = localStorage.getItem("token");
       if (!token) { toast.error("Please login first"); return; }
-      await axios.post("http://localhost:5000/api/cart", { productId }, {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/cart`, { productId }, {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.success("Added to cart!");

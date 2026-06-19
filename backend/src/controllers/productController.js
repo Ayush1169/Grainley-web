@@ -83,7 +83,7 @@ exports.createProduct = async (req, res) => {
 
   } catch (error) {
   console.log("========== PRODUCT ERROR ==========");
-  console.log(error);
+  console.dir(error, { depth: null });
   console.log("===================================");
 
   return res.status(500).json({

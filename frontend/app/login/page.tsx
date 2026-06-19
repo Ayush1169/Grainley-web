@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { API } from "@/lib/api";
 import {
   Mail,
   Lock,
@@ -43,7 +44,7 @@ const FEATURE_LIST = [
 
 export default function LoginPage() {
   const router = useRouter();
-
+  
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -55,6 +56,9 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+      console.log("HANDLE SUBMIT CALLED");
+  console.log("HANDLE SUBMIT CALLED"); 
+
     if (!formData.email || !formData.password) {
       toast.error("Please fill all fields");
       return;
@@ -62,11 +66,12 @@ export default function LoginPage() {
 
     try {
       setLoading(true);
-      const response = await axios.post(
-        "http://localhost:5000/api/auth/login",
-        formData
-      );
-
+      const response = await API.post(
+  "/auth/login",
+  formData
+);
+console.log("LOGIN RESPONSE", response.data);
+CreditCard
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
 

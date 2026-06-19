@@ -4,7 +4,6 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import axios from "axios";
 import toast from "react-hot-toast";
 import {
   User,
@@ -19,6 +18,7 @@ import {
   CreditCard,
   CheckCircle2,
 } from "lucide-react";
+import { API } from "@/lib/api";
 
 type Step = "form" | "otp";
 
@@ -87,9 +87,12 @@ export default function SignupPage() {
 
     try {
       setLoading(true);
-      const res = await axios.post("http://localhost:5000/api/auth/send-otp", {
-        email: formData.email,
-      });
+      const res = await API.post(
+  "/auth/send-otp",
+  {
+    email: formData.email,
+  }
+);
       toast.success(res.data.message || "OTP sent to your email!");
       setStep("otp");
     } catch (err: any) {
@@ -129,7 +132,8 @@ export default function SignupPage() {
 
     try {
       setLoading(true);
-      const res = await axios.post("http://localhost:5000/api/auth/signup", {
+       const res = await API.post(
+  "/auth/signup",{
         email: formData.email,
         otp: code,
         name: formData.name,
@@ -148,7 +152,8 @@ export default function SignupPage() {
   const handleResendOtp = async () => {
     try {
       setLoading(true);
-      const res = await axios.post("http://localhost:5000/api/auth/send-otp", {
+      const res = await API.post(
+  "/auth/send-otp",{
         email: formData.email,
       });
       toast.success(res.data.message || "OTP resent!");
