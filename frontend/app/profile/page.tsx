@@ -32,11 +32,11 @@ export default function ProfilePage() {
   const QUICK_ACTIONS = [
     { icon: Heart, label: "My Wishlist", sub: "View saved products", href: "/wishlist", iconColor: "text-red-500", bg: "bg-red-50" },
     { icon: ShoppingCart, label: "My Cart", sub: "Manage cart items", href: "/cart", iconColor: "text-[#2d6a2d]", bg: "bg-[#e8f5e8]" },
-    { icon: Package, label: "My Orders", sub: "Track your orders", href: "/orders", iconColor: "text-blue-500", bg: "bg-blue-50" },
+    { icon: Package, label: "My Orders", sub: "Track your orders", href: "/profile/orders", iconColor: "text-blue-500", bg: "bg-blue-50" },
   ];
 
   const MENU_ITEMS = [
-    { icon: Package, label: "My Orders", sub: "View & track all orders", href: "/orders" },
+    { icon: Package, label: "My Orders", sub: "View & track all orders", href: "/profile/orders" },
     { icon: Heart, label: "Wishlist", sub: "Products you've saved", href: "/wishlist" },
     { icon: ShoppingCart, label: "Cart", sub: "Items in your cart", href: "/cart" },
     { icon: MapPin, label: "Saved Addresses", sub: "Manage delivery addresses", href: "/addresses" },

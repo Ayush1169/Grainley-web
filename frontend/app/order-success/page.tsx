@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { API } from "@/lib/api";
 import Link from "next/link";
 import {
@@ -27,9 +27,10 @@ interface OrderDetails {
   };
 }
 
-export default function OrderSuccessPage() {
+// All the original logic now lives in this inner component.
+// It's the one that actually calls useSearchParams().
+function OrderSuccessContent() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const orderId = searchParams.get("id");
 
   const [order, setOrder] = useState<OrderDetails | null>(null);
@@ -188,5 +189,26 @@ export default function OrderSuccessPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Simple fallback shown while the Suspense boundary resolves
+// the search params on first load.
+function OrderSuccessFallback() {
+  return (
+    <div className="min-h-screen flex flex-col justify-center items-center bg-[#f8f8f3]">
+      <Loader2 className="animate-spin text-[#2d6a2d] mb-3" size={32} />
+      <p className="text-gray-500 text-sm">Loading your order…</p>
+    </div>
+  );
+}
+
+// The page export itself just wraps the content in Suspense.
+// This satisfies Next.js's static-export requirement for useSearchParams().
+export default function OrderSuccessPage() {
+  return (
+    <Suspense fallback={<OrderSuccessFallback />}>
+      <OrderSuccessContent />
+    </Suspense>
   );
 }

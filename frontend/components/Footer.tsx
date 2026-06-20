@@ -73,9 +73,16 @@ export default function Footer() {
           <div>
             <h4 className="text-[#1a3d1a] font-bold text-sm mb-3">My Account</h4>
             <div className="space-y-2 text-xs text-gray-500">
-              {["My Orders", "Wishlist", "Addresses", "Account Details", "Track Order", "My Coupons"].map((item) => (
-                <Link key={item} href="#" className="block hover:text-[#2d6a2d] transition">{item}</Link>
-              ))}
+            {[
+  { label: "My Orders", href: "/profile/orders" },
+  { label: "Wishlist", href: "/wishlist" },
+  { label: "Addresses", href: "/profile/addresses" },
+  { label: "Account Details", href: "/profile" },
+  { label: "Track Order", href: "/profile/orders" },
+  { label: "My Coupons", href: "#" },
+].map(({ label, href }) => (
+  <Link key={label} href={href} className="block hover:text-[#2d6a2d] transition">{label}</Link>
+))}
             </div>
           </div>
 
