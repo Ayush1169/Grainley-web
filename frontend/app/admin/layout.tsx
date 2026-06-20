@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import Image from "next/image";
 import {
   LayoutDashboard,
   Package,
@@ -44,9 +45,9 @@ export default function AdminLayout({
       {/* Logo */}
       <div className="px-6 py-6 border-b border-[#1e2e1e]">
         <div className="flex items-center gap-2">
-          <span className="text-xl">🌿</span>
+          <Image src="/logo/logo.png" alt="Grainley Foods" width={24} height={24} className="rounded-md object-contain" />
           <div>
-            <p className="text-white font-bold text-base leading-none">NutriSeeds</p>
+            <p className="text-white font-bold text-base leading-none">Grainley Foods</p>
             <p className="text-[#4a7a4a] text-[10px] mt-0.5">Admin Panel</p>
           </div>
         </div>
@@ -118,8 +119,8 @@ export default function AdminLayout({
         {/* Mobile topbar */}
         <header className="lg:hidden flex items-center justify-between px-4 py-4 border-b border-[#1e2e1e] bg-[#0f140f]">
           <div className="flex items-center gap-2">
-            <span className="text-lg">🌿</span>
-            <p className="text-white font-bold text-base">NutriSeeds Admin</p>
+            <Image src="/logo/logo.png" alt="Grainley Foods" width={24} height={24} className="rounded-md object-contain" />
+            <p className="text-white font-bold text-base">Grainley Admin</p>
           </div>
           <button
             onClick={() => setSidebarOpen(true)}

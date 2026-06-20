@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Phone, Mail, Clock, MapPin } from "lucide-react";
+import Image from "next/image";
+import { Phone, Mail, Clock, MapPin, Globe } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -31,21 +32,51 @@ export default function Footer() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-2 mb-3">
-              <span className="text-xl">🌿</span>
+              <Image
+                src="/logo/logo.png"
+                alt="Grainley Foods"
+                width={28}
+                height={28}
+                className="rounded-md object-contain"
+              />
               <div>
-                <p className="text-[#1a3d1a] font-extrabold text-base leading-none">NutriSeeds</p>
+                <p className="text-[#1a3d1a] font-extrabold text-base leading-none">Grainley Foods</p>
                 <p className="text-[#5a8a5a] text-[9px]">Healthy Seeds, Healthy You</p>
               </div>
             </div>
             <p className="text-gray-500 text-xs leading-relaxed">
-              NutriSeeds brings you the finest range of natural and premium quality seeds for a healthy and better lifestyle.
+              Grainley Foods brings you the finest range of natural and premium quality seeds for a healthy and better lifestyle.
             </p>
             <div className="flex gap-3 mt-4">
-              {["f", "in", "yt", "wa"].map((s) => (
-                <div key={s} className="w-8 h-8 bg-gray-100 hover:bg-[#2d6a2d] hover:text-white rounded-full flex items-center justify-center text-gray-500 text-xs font-bold cursor-pointer transition">
-                  {s}
-                </div>
-              ))}
+              {/* PLACEHOLDER: only Instagram is a confirmed real handle right now.
+                  Replace f/in/yt hrefs with real profile URLs once you have them. */}
+              <a
+                href="#"
+                className="w-8 h-8 bg-gray-100 hover:bg-[#2d6a2d] hover:text-white rounded-full flex items-center justify-center text-gray-500 text-xs font-bold cursor-pointer transition"
+              >
+                f
+              </a>
+              <a
+                href="#"
+                className="w-8 h-8 bg-gray-100 hover:bg-[#2d6a2d] hover:text-white rounded-full flex items-center justify-center text-gray-500 text-xs font-bold cursor-pointer transition"
+              >
+                in
+              </a>
+              <a
+                href="#"
+                className="w-8 h-8 bg-gray-100 hover:bg-[#2d6a2d] hover:text-white rounded-full flex items-center justify-center text-gray-500 text-xs font-bold cursor-pointer transition"
+              >
+                yt
+              </a>
+              <a
+                href="https://instagram.com/grainleyfoods"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-8 h-8 bg-gray-100 hover:bg-[#2d6a2d] hover:text-white rounded-full flex items-center justify-center text-gray-500 text-xs font-bold transition"
+                aria-label="Instagram"
+              >
+                ig
+              </a>
             </div>
           </div>
 
@@ -63,8 +94,16 @@ export default function Footer() {
           <div>
             <h4 className="text-[#1a3d1a] font-bold text-sm mb-3">Customer Service</h4>
             <div className="space-y-2 text-xs text-gray-500">
-              {["About Us", "Contact Us", "FAQ's", "Shipping Policy", "Return & Refund", "Terms & Conditions", "Privacy Policy"].map((item) => (
-                <Link key={item} href="#" className="block hover:text-[#2d6a2d] transition">{item}</Link>
+              {[
+                { label: "About Us", href: "/about" },
+                { label: "Contact Us", href: "/contact" },
+                { label: "FAQ's", href: "/faq" },
+                { label: "Shipping Policy", href: "/shipping-policy" },
+                { label: "Return & Refund", href: "/return-refund" },
+                { label: "Terms & Conditions", href: "/terms" },
+                { label: "Privacy Policy", href: "/privacy-policy" },
+              ].map(({ label, href }) => (
+                <Link key={label} href={href} className="block hover:text-[#2d6a2d] transition">{label}</Link>
               ))}
             </div>
           </div>
@@ -73,16 +112,16 @@ export default function Footer() {
           <div>
             <h4 className="text-[#1a3d1a] font-bold text-sm mb-3">My Account</h4>
             <div className="space-y-2 text-xs text-gray-500">
-            {[
-  { label: "My Orders", href: "/profile/orders" },
-  { label: "Wishlist", href: "/wishlist" },
-  { label: "Addresses", href: "/profile/addresses" },
-  { label: "Account Details", href: "/profile" },
-  { label: "Track Order", href: "/profile/orders" },
-  { label: "My Coupons", href: "#" },
-].map(({ label, href }) => (
-  <Link key={label} href={href} className="block hover:text-[#2d6a2d] transition">{label}</Link>
-))}
+              {[
+                { label: "My Orders", href: "/profile/orders" },
+                { label: "Wishlist", href: "/wishlist" },
+                { label: "Addresses", href: "/profile/addresses" },
+                { label: "Account Details", href: "/profile" },
+                { label: "Track Order", href: "/profile/orders" },
+                { label: "My Coupons", href: "#" },
+              ].map(({ label, href }) => (
+                <Link key={label} href={href} className="block hover:text-[#2d6a2d] transition">{label}</Link>
+              ))}
             </div>
           </div>
 
@@ -90,31 +129,55 @@ export default function Footer() {
           <div>
             <h4 className="text-[#1a3d1a] font-bold text-sm mb-3">Contact Us</h4>
             <div className="space-y-2.5 text-xs text-gray-500">
-              <div className="flex items-start gap-2">
+              <a href="tel:+919919456600" className="flex items-start gap-2 hover:text-[#2d6a2d] transition w-fit">
                 <Phone size={12} className="text-[#2d6a2d] mt-0.5 shrink-0" />
-                <span>+91 98765 43210</span>
-              </div>
-              <div className="flex items-start gap-2">
+                <span>+91-9919456600</span>
+              </a>
+              <a href="mailto:wecare@grainleyfoods.com" className="flex items-start gap-2 hover:text-[#2d6a2d] transition w-fit">
                 <Mail size={12} className="text-[#2d6a2d] mt-0.5 shrink-0" />
-                <span>support@nutriseeds.com</span>
-              </div>
+                <span>wecare@grainleyfoods.com</span>
+              </a>
+              <a
+                href="https://grainleyfoods.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-start gap-2 hover:text-[#2d6a2d] transition w-fit"
+              >
+                <Globe size={12} className="text-[#2d6a2d] mt-0.5 shrink-0" />
+                <span>grainleyfoods.com</span>
+              </a>
               <div className="flex items-start gap-2">
                 <Clock size={12} className="text-[#2d6a2d] mt-0.5 shrink-0" />
                 <span>Mon - Sat: 9:00 AM - 7:00 PM</span>
               </div>
-              <div className="flex items-start gap-2">
+              <a
+                href="https://www.google.com/maps/search/?api=1&query=Allied+Traders+994%2F035+Siddhi+Vinayak+Colony+Nilmatha+Road+Telibagh+Lucknow+Uttar+Pradesh+226029"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-start gap-2 hover:text-[#2d6a2d] transition"
+              >
                 <MapPin size={12} className="text-[#2d6a2d] mt-0.5 shrink-0" />
-                <span>Bangalore, Karnataka, India</span>
-              </div>
+                <span>
+                  Allied Traders, #994/035, Siddhi Vinayak Colony, Near
+                  Vrindawan Sector 6C Post Office, Nilmatha Road, Telibagh,
+                  Lucknow, Uttar Pradesh – 226029
+                </span>
+              </a>
             </div>
           </div>
+        </div>
+
+        {/* FSSAI / compliance strip */}
+        <div className="border-t border-gray-100 mt-8 pt-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-[10px] text-gray-400">
+          <span>FSSAI Reg. No. – 22725748000645</span>
+          <span>Made in India</span>
         </div>
       </div>
 
       {/* Bottom bar */}
       <div className="border-t border-gray-100 py-4 px-4">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
-          <p className="text-gray-400 text-xs">© 2024 NutriSeeds. All Rights Reserved.</p>
+          <p className="text-gray-400 text-xs">© 2024 Grainley Foods. All Rights Reserved.</p>
           <div className="flex items-center gap-2">
             <span className="text-gray-400 text-xs">We Accept:</span>
             {["VISA", "MC", "UPI", "PayTM", "GPay"].map((p) => (

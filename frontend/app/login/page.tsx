@@ -98,11 +98,11 @@ if (user.role === "admin") {
       {/* ── Top bar ── */}
       <header className="w-full px-6 py-4 flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <span className="text-2xl">🌿</span>
-          <div>
-            <p className="text-[#1a3d1a] font-bold text-lg leading-none">NutriSeeds</p>
-            <p className="text-[#5a8a5a] text-[11px] leading-none">Healthy Seeds, Healthy You</p>
-          </div>
+         <Image src="/logo/logo.png" alt="Grainley Foods" width={28} height={28} className="rounded-md object-contain" />
+<div>
+  <p className="text-[#1a3d1a] font-bold text-lg leading-none">Grainley Foods</p>
+  <p className="text-[#5a8a5a] text-[11px] leading-none">Healthy Seeds, Healthy You</p>
+</div>
         </div>
         <p className="text-sm text-gray-500">
           Don&apos;t have an account?{" "}

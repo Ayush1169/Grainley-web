@@ -7,8 +7,7 @@ import Footer from "@/components/Footer";
 
 export default function Home() {
   return (
-    <>
-      <Navbar />
+    <> 
 
       <Hero />
 
@@ -18,7 +17,6 @@ export default function Home() {
 
       <WhyChooseUs />
 
-      <Footer />
     </>
   );
 }

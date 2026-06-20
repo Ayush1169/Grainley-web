@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { ShoppingCart, Heart, User, Search, Menu, X, ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -64,11 +65,14 @@ export default function Navbar() {
             <span className="flex items-center gap-1.5">🚚 Fast & Safe Delivery</span>
           </div>
           <div className="flex items-center gap-5 text-white/80">
-            <Link href="/track-order" className="hover:text-white transition">Track Order</Link>
+            <Link href="/profile/orders" className="hover:text-white transition">Track Order</Link>
             <span>|</span>
-            <Link href="/help" className="hover:text-white transition">Help & Support</Link>
+            <Link href="/faq" className="hover:text-white transition">Help & Support</Link>
             <span>|</span>
-            <span>📞 +91 98765 43210</span>
+            {/* Clickable phone number — opens the device's dialer */}
+            <a href="tel:+919919456600" className="hover:text-white transition">
+              📞 +91-9919456600
+            </a>
           </div>
         </div>
       </div>
@@ -78,9 +82,15 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center gap-4">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 shrink-0">
-            <span className="text-xl">🌿</span>
+            <Image
+              src="/logo/logo.png"
+              alt="Grainley Foods"
+              width={32}
+              height={32}
+              className="rounded-md object-contain"
+            />
             <div>
-              <p className="text-[#1a3d1a] font-extrabold text-lg leading-none">NutriSeeds</p>
+              <p className="text-[#1a3d1a] font-extrabold text-lg leading-none">Grainley Foods</p>
               <p className="text-[#5a8a5a] text-[9px] leading-none">Healthy Seeds, Healthy You</p>
             </div>
           </Link>
@@ -198,6 +208,7 @@ export default function Navbar() {
               />
               <Search size={15} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
             </div>
+
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.label}
@@ -206,33 +217,45 @@ export default function Navbar() {
                 className="block text-sm text-gray-700 font-medium py-1.5 border-b border-gray-50"
               >
                 {link.label}
+                {link.hot && (
+                  <span className="ml-1.5 bg-red-500 text-white text-[8px] px-1 py-0.5 rounded font-bold align-middle">HOT</span>
+                )}
               </Link>
             ))}
-            <div className="flex gap-4 pt-2">
-              <Link href="/wishlist" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 text-sm text-gray-600">
-                <Heart size={16} /> Wishlist
+
+            <Link
+              href="/wishlist"
+              onClick={() => setMobileOpen(false)}
+              className="flex items-center gap-2 text-sm text-gray-700 font-medium py-1.5 border-b border-gray-50"
+            >
+              <Heart size={16} /> Wishlist
+              {wishlistCount > 0 && (
+                <span className="bg-red-500 text-white text-[9px] h-4 w-4 rounded-full flex items-center justify-center font-bold ml-auto">
+                  {wishlistCount}
+                </span>
+              )}
+            </Link>
+
+            {/* Account / Login section — was completely broken before:
+                it used "hidden md:flex" inside a mobile-only menu, which
+                made it invisible on the one screen size it needed to show on. */}
+            {user ? (
+              <Link
+                href="/profile"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center gap-2 text-sm text-gray-700 font-medium py-1.5"
+              >
+                <User size={16} /> My Account
               </Link>
-              {
-  user ? (
-    <Link
-      href="/profile"
-      className="flex flex-col items-center hidden md:flex"
-    >
-      <User className="w-5 h-5 text-gray-600" />
-      <span className="text-[9px] text-gray-500">
-        My Account
-      </span>
-    </Link>
-  ) : (
-    <Link
-      href="/login"
-      className="bg-[#2d6a2d] text-white px-4 py-2 rounded-lg text-sm font-medium"
-    >
-      Login
-    </Link>
-  )
-}
-            </div>
+            ) : (
+              <Link
+                href="/login"
+                onClick={() => setMobileOpen(false)}
+                className="block text-center bg-[#2d6a2d] hover:bg-[#235423] text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition mt-2"
+              >
+                Login / Sign Up
+              </Link>
+            )}
           </div>
         )}
       </header>

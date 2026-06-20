@@ -153,7 +153,7 @@ export default function ProfilePage() {
         </div>
 
         <p className="text-center text-gray-300 text-xs pb-4">
-          NutriSeeds © 2024 · Healthy Seeds, Healthy You
+          Grainley Foods © 2026 · Healthy Seeds, Healthy You
         </p>
       </div>
     </div>

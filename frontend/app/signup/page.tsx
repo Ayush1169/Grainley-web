@@ -173,12 +173,14 @@ export default function SignupPage() {
         {/* Logo */}
         <div className="flex items-center gap-2">
           <div className="flex gap-[2px]">
-            <span className="text-[#2d6a2d] text-2xl">🌿</span>
+            <Image src="/logo/logo.png" alt="Grainley Foods" width={28} height={28} className="rounded-md object-contain" />
           </div>
+
           <div>
-            <p className="text-[#1a3d1a] font-bold text-lg leading-none">NutriSeeds</p>
-            <p className="text-[#5a8a5a] text-[11px] leading-none">Healthy Seeds, Healthy You</p>
-          </div>
+  <p className="text-[#1a3d1a] font-bold text-lg leading-none">Grainley Foods</p>
+  <p className="text-[#5a8a5a] text-[11px] leading-none">Healthy Seeds, Healthy You</p>
+</div>
+         
         </div>
         <p className="text-sm text-gray-500">
           Already have an account?{" "}
