@@ -10,11 +10,17 @@ const {
   getMyOrders,
   getAllOrders,
   updateOrderStatus,
+  getDeliveryEstimate,
+  getOrderById
 } = require("../controllers/orderController");
 
 router.post("/", auth, createOrder);
 
 router.get("/my-orders", auth, getMyOrders);
+
+router.get("/estimate", getDeliveryEstimate);
+
+router.get("/:id", auth, getOrderById);
 
 router.get(
   "/admin/all",

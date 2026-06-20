@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   MapPin, Plus, ArrowLeft, ShieldCheck,
-  Truck, CreditCard, Check, ShoppingBag,
+  Truck, CreditCard, Check, ShoppingBag, Clock,
 } from "lucide-react";
 
 export default function CheckoutPage() {
@@ -19,9 +19,23 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
 
+  // NEW: delivery estimate state
+  const [estimatedDate, setEstimatedDate] = useState<string | null>(null);
+  const [estimateLoading, setEstimateLoading] = useState(false);
+
   useEffect(() => {
     Promise.all([fetchCart(), fetchAddresses()]).finally(() => setPageLoading(false));
   }, []);
+
+  // NEW: whenever the selected address changes, fetch a fresh ETA
+  useEffect(() => {
+    if (!selectedAddress || addresses.length === 0) return;
+
+    const selected = addresses.find((a: any) => a._id === selectedAddress);
+    if (!selected) return;
+
+    fetchEstimate(selected.state, selected.city);
+  }, [selectedAddress, addresses]);
 
   const fetchCart = async () => {
     try {
@@ -45,6 +59,33 @@ export default function CheckoutPage() {
     } catch (error) { console.log(error); }
   };
 
+  // NEW: fetch live delivery estimate from backend
+  const fetchEstimate = async (state: string, city: string) => {
+    try {
+      setEstimateLoading(true);
+      setEstimatedDate(null);
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/orders/estimate`,
+        { params: { state, city } }
+      );
+      setEstimatedDate(res.data.estimatedDeliveryDate);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setEstimateLoading(false);
+    }
+  };
+
+  // NEW: formats date like "Tue, 24 June"
+  const formatEstimate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("en-IN", {
+      weekday: "short",
+      day: "numeric",
+      month: "long",
+    });
+  };
+
   const totalAmount = cart.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
   const delivery = totalAmount > 499 ? 0 : 49;
   const grandTotal = totalAmount + delivery;
@@ -65,26 +106,27 @@ export default function CheckoutPage() {
         price: item.product.price,
       }));
 
-      await axios.post(
+      const res = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/orders`,
         {
           products,
           totalAmount,
-          shippingAddress: `
-${selected.houseNo},
-${selected.street},
-${selected.landmark},
-${selected.city},
-${selected.state},
-${selected.pincode}
-`,
+          shippingAddress: {
+            fullName: selected.fullName,
+            phone: selected.mobile,
+            address: `${selected.houseNo}, ${selected.street}, ${selected.landmark || ""}`,
+            city: selected.city,
+            state: selected.state,
+            pincode: selected.pincode,
+          },
           paymentMethod: "COD",
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
       toast.success("Order placed successfully!");
-      router.push("/profile/orders");
+      // CHANGED: route to order-success first, with order id, instead of straight to orders list
+      router.push(`/order-success?id=${res.data.order._id}`);
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Order failed");
     } finally {
@@ -188,6 +230,22 @@ ${selected.pincode}
                             <br />
                             {addr.city}, {addr.state} – {addr.pincode}
                           </p>
+
+                          {/* NEW: live ETA shown only on the selected address card */}
+                          {isSelected && (
+                            <div className="flex items-center gap-1.5 mt-3 bg-white border border-[#2d6a2d]/20 rounded-lg px-3 py-2 w-fit">
+                              <Clock size={13} className="text-[#2d6a2d]" />
+                              {estimateLoading ? (
+                                <span className="text-xs text-gray-400">Checking delivery date…</span>
+                              ) : estimatedDate ? (
+                                <span className="text-xs font-semibold text-[#1a3d1a]">
+                                  Delivery by {formatEstimate(estimatedDate)}
+                                </span>
+                              ) : (
+                                <span className="text-xs text-gray-400">Delivery date unavailable</span>
+                              )}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </label>
@@ -248,8 +306,18 @@ ${selected.pincode}
                 <span>₹{grandTotal}</span>
               </div>
 
+              {/* NEW: ETA also summarized here, mirrors Amazon's order-summary ETA */}
+              {estimatedDate && !estimateLoading && (
+                <div className="flex items-center gap-2 bg-[#e8f5e8] border border-[#2d6a2d]/20 rounded-xl px-4 py-3 mt-4 text-sm">
+                  <Truck size={15} className="text-[#2d6a2d]" />
+                  <span className="text-[#1a3d1a] font-semibold">
+                    Arriving by {formatEstimate(estimatedDate)}
+                  </span>
+                </div>
+              )}
+
               {/* Payment method */}
-              <div className="flex items-center gap-2 bg-[#f5f5ef] border border-gray-100 rounded-xl px-4 py-3 mt-4 text-sm">
+              <div className="flex items-center gap-2 bg-[#f5f5ef] border border-gray-100 rounded-xl px-4 py-3 mt-3 text-sm">
                 <CreditCard size={15} className="text-[#2d6a2d]" />
                 <span className="text-gray-600">Payment Method:</span>
                 <span className="font-bold text-[#1a3d1a]">Cash on Delivery</span>

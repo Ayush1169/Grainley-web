@@ -33,15 +33,46 @@ const orderSchema = new mongoose.Schema(
     },
 
     shippingAddress: {
-      type: String,
-      required: true,
-    },
+  fullName: String,
+  phone: String,
+  address: String,
+  city: String,
+  state: String,
+  pincode: String,
+},
 
     paymentMethod: {
       type: String,
       enum: ["COD", "ONLINE"],
       default: "COD",
     },
+
+    estimatedDeliveryDate: {
+  type: Date
+},
+
+tracking: {
+  orderPlacedAt: Date,
+  packedAt: Date,
+  shippedAt: Date,
+  outForDeliveryAt: Date,
+  deliveredAt: Date
+},
+
+courierName: {
+  type: String,
+  default: null,
+},
+
+courierTrackingId: {
+  type: String,
+  default: null,
+},
+
+trackingId: {
+  type: String,
+  unique: true
+},
 
     paymentStatus: {
       type: String,
@@ -54,6 +85,8 @@ const orderSchema = new mongoose.Schema(
       enum: [
         "Pending",
         "Processing",
+        "Out For Delivery",
+        "Packed",
         "Shipped",
         "Delivered",
         "Cancelled",

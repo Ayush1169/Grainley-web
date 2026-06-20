@@ -4,16 +4,11 @@ const router = express.Router();
 const { auth } = require("../middleware/auth");
 const { isAdmin } = require("../middleware/admin");
 
-const {
-  getDashboardStats,
-  getAllUsers,
-} = require("../controllers/adminController");
+const {getDashboardStats,getAllUsers,} = require("../controllers/adminController");
 
-router.get(
-  "/stats",
-  auth,
-  isAdmin,
-  getDashboardStats
+const { getAllCustomers } = require("../controllers/adminController");
+
+router.get("/stats", auth,isAdmin,getDashboardStats
 );
 
 router.get(
@@ -22,5 +17,7 @@ router.get(
   isAdmin,
   getAllUsers
 );
+
+router.get("/customers", auth, isAdmin, getAllCustomers);
 
 module.exports = router;
