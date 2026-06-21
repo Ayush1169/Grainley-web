@@ -15,7 +15,9 @@ const app = express();
 app.use(cors({
   origin: [
     "http://localhost:3000",
-    "https://grainley-web-uny7.vercel.app"
+    "https://grainley-web-uny7.vercel.app",
+     "https://grainleyfoods.com",
+    "https://www.grainleyfoods.com"
   ],
   credentials: true
 }));
