@@ -15,15 +15,17 @@ export default function WishlistPage() {
   useEffect(() => { fetchWishlist(); }, []);
 
   const fetchWishlist = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/wishlist`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setWishlist(res.data.wishlist);
-    } catch (error) { console.log(error); }
-    finally { setLoading(false); }
-  };
+  try {
+    const token = localStorage.getItem("token");
+    const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/wishlist`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    // filter out items whose product was deleted from DB (populate returns null)
+    const validItems = (res.data.wishlist || []).filter((item: any) => item.product);
+    setWishlist(validItems);
+  } catch (error) { console.log(error); }
+  finally { setLoading(false); }
+};
 
   const removeWishlist = async (id: string) => {
     try {
