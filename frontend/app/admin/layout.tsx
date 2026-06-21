@@ -42,7 +42,6 @@ export default function AdminLayout({
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
-      {/* Logo */}
       <div className="px-6 py-6 border-b border-[#1e2e1e]">
         <div className="flex items-center gap-2">
           <Image src="/logo/logo.png" alt="Grainley Foods" width={24} height={24} className="rounded-md object-contain" />
@@ -53,7 +52,6 @@ export default function AdminLayout({
         </div>
       </div>
 
-      {/* Nav */}
       <nav className="flex-1 px-3 py-5 space-y-1 overflow-y-auto">
         {NAV_ITEMS.map(({ label, href, icon: Icon }) => {
           const active = pathname === href;
@@ -75,7 +73,6 @@ export default function AdminLayout({
         })}
       </nav>
 
-      {/* Logout */}
       <div className="px-3 py-5 border-t border-[#1e2e1e]">
         <button
           onClick={handleLogout}
@@ -90,12 +87,10 @@ export default function AdminLayout({
 
   return (
     <div className="min-h-screen flex bg-[#0c0f0c] text-white">
-      {/* Desktop sidebar */}
       <aside className="hidden lg:flex flex-col w-60 bg-[#0f140f] border-r border-[#1e2e1e] fixed top-0 left-0 h-full z-30">
         <SidebarContent />
       </aside>
 
-      {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div className="lg:hidden fixed inset-0 z-40 flex">
           <div
@@ -114,9 +109,7 @@ export default function AdminLayout({
         </div>
       )}
 
-      {/* Main */}
       <div className="flex-1 lg:ml-60 flex flex-col min-h-screen">
-        {/* Mobile topbar */}
         <header className="lg:hidden flex items-center justify-between px-4 py-4 border-b border-[#1e2e1e] bg-[#0f140f]">
           <div className="flex items-center gap-2">
             <Image src="/logo/logo.png" alt="Grainley Foods" width={24} height={24} className="rounded-md object-contain" />

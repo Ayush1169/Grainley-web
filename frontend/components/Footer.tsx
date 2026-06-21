@@ -84,7 +84,7 @@ export default function Footer() {
           <div>
             <h4 className="text-[#1a3d1a] font-bold text-sm mb-3">Shop</h4>
             <div className="space-y-2 text-xs text-gray-500">
-              {["Makhana", "Chia Seeds", "Flax Seeds", "Pumpkin Seeds", "Sunflower Seeds", "Mix Seeds", "Combo Packs", "All Products"].map((item) => (
+              {["Makhana", "Seeds", "Superfoods", "Natural Sweeteners", "Health Powders", "All Products"].map((item) => (
                 <Link key={item} href="/products" className="block hover:text-[#2d6a2d] transition">{item}</Link>
               ))}
             </div>
@@ -168,16 +168,13 @@ export default function Footer() {
         </div>
 
         {/* FSSAI / compliance strip */}
-        <div className="border-t border-gray-100 mt-8 pt-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-[10px] text-gray-400">
-          <span>FSSAI Reg. No. – 22725748000645</span>
-          <span>Made in India</span>
-        </div>
+        
       </div>
 
       {/* Bottom bar */}
       <div className="border-t border-gray-100 py-4 px-4">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
-          <p className="text-gray-400 text-xs">© 2024 Grainley Foods. All Rights Reserved.</p>
+          <p className="text-gray-400 text-xs">© 2026 Grainley Foods. All Rights Reserved.</p>
           <div className="flex items-center gap-2">
             <span className="text-gray-400 text-xs">We Accept:</span>
             {["VISA", "MC", "UPI", "PayTM", "GPay"].map((p) => (

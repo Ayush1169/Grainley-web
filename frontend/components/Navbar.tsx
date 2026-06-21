@@ -45,12 +45,10 @@ export default function Navbar() {
 
   const NAV_LINKS = [
     { label: "Makhana", href: "/products?category=makhana" },
-    { label: "Chia Seeds", href: "/products?category=chia-seeds" },
-    { label: "Flax Seeds", href: "/products?category=flax-seeds" },
-    { label: "Pumpkin Seeds", href: "/products?category=pumpkin-seeds" },
-    { label: "Sunflower Seeds", href: "/products?category=sunflower-seeds" },
-    { label: "Mix Seeds", href: "/products?category=mix-seeds" },
-    { label: "Combo Packs", href: "/products?category=combo-packs" },
+    { label: "Seeds", href: "/products?category=seeds" },
+    { label: "Superfoods", href: "/products?category=Superfoods" },
+    { label: "Natural Sweeteners", href: "/products?category=natural-sweeteners" },
+    { label: "Health Powders", href: "/products?category=health-powders" },
     { label: "Offers", href: "/offers", hot: true },
   ];
 

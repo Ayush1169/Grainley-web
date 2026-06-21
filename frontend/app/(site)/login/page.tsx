@@ -44,7 +44,7 @@ const FEATURE_LIST = [
 
 export default function LoginPage() {
   const router = useRouter();
-  
+
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -56,9 +56,6 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-      console.log("HANDLE SUBMIT CALLED");
-  console.log("HANDLE SUBMIT CALLED"); 
-
     if (!formData.email || !formData.password) {
       toast.error("Please fill all fields");
       return;
@@ -66,26 +63,20 @@ export default function LoginPage() {
 
     try {
       setLoading(true);
-      const response = await API.post(
-  "/auth/login",
-  formData
-);
-console.log("LOGIN RESPONSE", response.data);
-CreditCard
+      const response = await API.post("/auth/login", formData);
+
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
 
       toast.success("Login Successful!");
 
-      
+      const user = response.data.user;
 
-const user = response.data.user;
-
-if (user.role === "admin") {
-  router.push("/admin");
-} else {
-  router.push("/");
-}
+      if (user.role === "admin") {
+        router.push("/admin");
+      } else {
+        router.push("/");
+      }
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Login Failed");
     } finally {
@@ -95,23 +86,6 @@ if (user.role === "admin") {
 
   return (
     <div className="min-h-screen bg-[#f5f5ef] flex flex-col">
-      {/* ── Top bar ── */}
-      <header className="w-full px-6 py-4 flex justify-between items-center">
-        <div className="flex items-center gap-2">
-         <Image src="/logo/logo.png" alt="Grainley Foods" width={28} height={28} className="rounded-md object-contain" />
-<div>
-  <p className="text-[#1a3d1a] font-bold text-lg leading-none">Grainley Foods</p>
-  <p className="text-[#5a8a5a] text-[11px] leading-none">Healthy Seeds, Healthy You</p>
-</div>
-        </div>
-        <p className="text-sm text-gray-500">
-          Don&apos;t have an account?{" "}
-          <Link href="/signup" className="text-[#2d6a2d] font-semibold hover:underline">
-            Sign Up
-          </Link>
-        </p>
-      </header>
-
       {/* ── Main ── */}
       <main className="flex-1 flex items-center justify-center px-4 py-8">
         <div className="w-full max-w-6xl flex flex-col lg:flex-row gap-10 items-center">
@@ -248,37 +222,18 @@ if (user.role === "admin") {
                   </p>
                 </div>
               </div>
+
+              {/* Sign up link */}
+              <p className="text-center text-sm text-gray-500 pt-1">
+                Don&apos;t have an account?{" "}
+                <Link href="/signup" className="text-[#2d6a2d] font-semibold hover:underline">
+                  Sign Up
+                </Link>
+              </p>
             </form>
           </div>
         </div>
       </main>
-
-      {/* ── Footer trust bar ── */}
-      <footer className="w-full border-t border-gray-200 py-4 px-6">
-        <div className="max-w-6xl mx-auto flex justify-center gap-10 text-sm text-gray-500">
-          <div className="flex items-center gap-2">
-            <Shield size={16} className="text-[#2d6a2d]" />
-            <div>
-              <p className="font-semibold text-[#1a3d1a] text-xs">100% Secure</p>
-              <p className="text-[11px]">Payments</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Award size={16} className="text-[#2d6a2d]" />
-            <div>
-              <p className="font-semibold text-[#1a3d1a] text-xs">Premium Quality</p>
-              <p className="text-[11px]">Guaranteed</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Phone size={16} className="text-[#2d6a2d]" />
-            <div>
-              <p className="font-semibold text-[#1a3d1a] text-xs">24/7 Support</p>
-              <p className="text-[11px]">We&apos;re here to help</p>
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

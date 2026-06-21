@@ -4,14 +4,11 @@ import Link from "next/link";
 
 const CATEGORIES = [
   { name: "Makhana", emoji: "⚪", href: "/products?category=makhana", bg: "bg-amber-50" },
-  { name: "Chia Seeds", emoji: "🌑", href: "/products?category=chia-seeds", bg: "bg-gray-50" },
-  { name: "Flax Seeds", emoji: "🟤", href: "/products?category=flax-seeds", bg: "bg-orange-50" },
-  { name: "Pumpkin Seeds", emoji: "🟢", href: "/products?category=pumpkin-seeds", bg: "bg-green-50" },
-  { name: "Sunflower Seeds", emoji: "🌻", href: "/products?category=sunflower-seeds", bg: "bg-yellow-50" },
-  { name: "Mix Seeds", emoji: "🌾", href: "/products?category=mix-seeds", bg: "bg-lime-50" },
-  { name: "Combo Packs", emoji: "📦", href: "/products?category=combo-packs", bg: "bg-blue-50" },
-  { name: "Gift Packs", emoji: "🎁", href: "/products?category=gift-packs", bg: "bg-pink-50" },
-];
+  { name: "Seeds", emoji: "🌑", href: "/products?category=seeds", bg: "bg-gray-50" },
+  { name: "Superfoods", emoji: "🟤", href: "/products?category=Superfoods", bg: "bg-orange-50" },
+  { name: "Natural Sweeteners", emoji: "🟢", href: "/products?category=natural-sweeteners", bg: "bg-green-50" },
+  { name: "Health Powders", emoji: "🍚", href: "/products?category=health-powders", bg: "bg-yellow-50" },
+]
 
 export default function Categories() {
   return (
