@@ -8,9 +8,12 @@ const {
   getCart,
   updateQuantity,
   removeCart,
+   mergeCart,
 } = require("../controllers/cartController");
 
 router.post("/", auth, addToCart);
+
+router.post("/merge", auth, mergeCart);
 
 router.get("/", auth, getCart);
 

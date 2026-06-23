@@ -12,17 +12,16 @@ import {
   Package, Tag, Clock, Leaf, ShieldCheck,
   ChevronRight, Plus, Minus, Loader2
 } from "lucide-react";
+import { getGuestCartQty, addToGuestCart, updateGuestCartQty } from "@/lib/guestCart";
 
 export default function ProductDetails() {
   const params = useParams();
   const [product, setProduct] = useState<any>(null);
 
-  // cart state — store the Cart document's own _id, not the product id
   const [cartItemId, setCartItemId] = useState<string | null>(null);
-  const [cartQty, setCartQty] = useState(0); // 0 = not in cart yet
+  const [cartQty, setCartQty] = useState(0);
   const [cartLoading, setCartLoading] = useState(false);
 
-  // wishlist state — store the Wishlist document's own _id
   const [wishlistItemId, setWishlistItemId] = useState<string | null>(null);
   const [wishlistLoading, setWishlistLoading] = useState(false);
   const inWishlist = !!wishlistItemId;
@@ -45,10 +44,13 @@ export default function ProductDetails() {
     } catch (error) { console.log(error); }
   };
 
-  // GET /cart -> { cart: [ { _id, product: {...}, quantity } ] }
   const fetchCartStatus = async () => {
     const token = getToken();
-    if (!token) return;
+    if (!token) {
+      setCartItemId(null);
+      setCartQty(getGuestCartQty(product._id));
+      return;
+    }
     try {
       const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/cart`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -67,7 +69,6 @@ export default function ProductDetails() {
     }
   };
 
-  // GET /wishlist -> { wishlist: [ { _id, product: {...} } ] }
   const fetchWishlistStatus = async () => {
     const token = getToken();
     if (!token) return;
@@ -92,10 +93,16 @@ export default function ProductDetails() {
     return token;
   };
 
-  // POST /cart -> { cart: { _id, quantity, ... } } (created OR incremented)
   const addToCart = async () => {
-    const token = requireAuth();
-    if (!token) return;
+    const token = getToken();
+
+    if (!token) {
+      const newQty = addToGuestCart(product._id);
+      setCartQty(newQty);
+      toast.success("Added to cart!");
+      return;
+    }
+
     try {
       setCartLoading(true);
       const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/cart`, { productId: product._id }, {
@@ -109,11 +116,17 @@ export default function ProductDetails() {
     } finally { setCartLoading(false); }
   };
 
-  // PUT /cart/:id (Cart document id) -> set exact quantity
-  // DELETE /cart/:id (Cart document id) -> remove line item
   const updateCartQty = async (nextQty: number) => {
-    const token = requireAuth();
-    if (!token || !cartItemId) return;
+    const token = getToken();
+
+    if (!token) {
+      updateGuestCartQty(product._id, nextQty);
+      setCartQty(Math.max(nextQty, 0));
+      if (nextQty <= 0) toast.success("Removed from cart");
+      return;
+    }
+
+    if (!cartItemId) return;
     try {
       setCartLoading(true);
       if (nextQty <= 0) {
@@ -134,8 +147,6 @@ export default function ProductDetails() {
     } finally { setCartLoading(false); }
   };
 
-  // POST /wishlist -> { wishlist: { _id, ... } }
-  // DELETE /wishlist/:id (Wishlist document id) -> remove
   const toggleWishlist = async () => {
     const token = requireAuth();
     if (!token) return;
@@ -179,7 +190,6 @@ export default function ProductDetails() {
   return (
     <div className="bg-[#f9f9f5] min-h-screen py-6">
       <div className="max-w-6xl mx-auto px-4">
-        {/* Breadcrumb */}
         <nav className="flex items-center gap-1.5 text-xs text-gray-400 mb-6">
           <Link href="/" className="hover:text-[#2d6a2d] transition">Home</Link>
           <ChevronRight size={12} />
@@ -189,7 +199,6 @@ export default function ProductDetails() {
         </nav>
 
         <div className="grid md:grid-cols-2 gap-8">
-          {/* Image */}
           <div className="relative aspect-square rounded-2xl overflow-hidden border border-gray-100 bg-white shadow-sm">
             <Image
               src={product.images?.[0]?.url}
@@ -204,7 +213,6 @@ export default function ProductDetails() {
             )}
           </div>
 
-          {/* Info */}
           <div className="space-y-5">
             <div>
               {product.category?.name && (
@@ -263,7 +271,6 @@ export default function ProductDetails() {
               </div>
             )}
 
-            {/* CTA buttons */}
             <div className="flex gap-3 pt-1">
               {cartQty === 0 ? (
                 <button

@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const Cart = require("./Cart");
+const Wishlist = require("./Wishlist");
 
 const productSchema = new mongoose.Schema(
   {
@@ -83,6 +85,15 @@ slug: {
     timestamps: true,
   }
 );
+
+// Whenever a product is deleted via findByIdAndDelete / findOneAndDelete,
+// automatically clean up any Cart/Wishlist entries pointing to it —
+// so no controller ever has to remember to do this manually.
+productSchema.post("findOneAndDelete", async function (doc) {
+  if (!doc) return; // nothing was actually deleted
+  await Cart.deleteMany({ product: doc._id });
+  await Wishlist.deleteMany({ product: doc._id });
+});
 
 module.exports = mongoose.model(
   "Product",

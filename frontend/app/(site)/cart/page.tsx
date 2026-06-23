@@ -7,28 +7,69 @@ import Link from "next/link";
 import toast from "react-hot-toast";
 import { Trash2, ShoppingBag, Minus, Plus, ArrowLeft, Tag } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { getGuestCart, updateGuestCartQty } from "@/lib/guestCart";
 
 export default function CartPage() {
   const [cart, setCart] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isGuest, setIsGuest] = useState(false);
   const router = useRouter();
 
   useEffect(() => { fetchCart(); }, []);
 
   const fetchCart = async () => {
-  try {
     const token = localStorage.getItem("token");
-    const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/cart`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    // filter out items whose product was deleted from DB (populate returns null)
-    const validItems = (res.data.cart || []).filter((item: any) => item.product);
-    setCart(validItems);
-  } catch (error) { console.log(error); }
-  finally { setLoading(false); }
-};
+
+    if (!token) {
+      setIsGuest(true);
+      await fetchGuestCart();
+      return;
+    }
+
+    setIsGuest(false);
+    try {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/cart`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const validItems = (res.data.cart || []).filter((item: any) => item.product);
+      setCart(validItems);
+    } catch (error) { console.log(error); }
+    finally { setLoading(false); }
+  };
+
+  // builds the same { _id, product, quantity } shape the rest of this
+  // page already expects, just sourced from localStorage instead of the API
+  const fetchGuestCart = async () => {
+    try {
+      const guestItems = getGuestCart();
+      if (guestItems.length === 0) { setCart([]); return; }
+
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/products`);
+      const allProducts = res.data.products || [];
+
+      const merged = guestItems
+        .map((gi) => {
+          const product = allProducts.find((p: any) => p._id === gi.productId);
+          if (!product) return null;
+          return { _id: gi.productId, product, quantity: gi.quantity };
+        })
+        .filter(Boolean);
+
+      setCart(merged as any[]);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const removeItem = async (id: string) => {
+    if (isGuest) {
+      updateGuestCartQty(id, 0);
+      toast.success("Item removed");
+      fetchGuestCart();
+      return;
+    }
     try {
       const token = localStorage.getItem("token");
       await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/cart/${id}`, {
@@ -41,6 +82,12 @@ export default function CartPage() {
 
   const updateQty = async (id: string, quantity: number) => {
     if (quantity < 1) return;
+
+    if (isGuest) {
+      updateGuestCartQty(id, quantity);
+      fetchGuestCart();
+      return;
+    }
     try {
       const token = localStorage.getItem("token");
       await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/cart/${id}`, { quantity }, {
@@ -68,7 +115,6 @@ export default function CartPage() {
   return (
     <div className="bg-[#f9f9f5] min-h-screen py-8">
       <div className="max-w-6xl mx-auto px-4">
-        {/* Header */}
         <div className="flex items-center gap-3 mb-6">
           <Link href="/products" className="flex items-center gap-1.5 text-[#2d6a2d] text-sm font-medium hover:underline">
             <ArrowLeft size={16} /> Continue Shopping
@@ -89,11 +135,9 @@ export default function CartPage() {
           </div>
         ) : (
           <div className="flex flex-col lg:flex-row gap-6">
-            {/* Cart items */}
             <div className="flex-1 space-y-4">
               {cart.map((item) => (
                 <div key={item._id} className="bg-white border border-gray-100 rounded-2xl p-4 flex gap-4 shadow-sm">
-                  {/* Image */}
                   <div className="relative w-20 h-20 md:w-24 md:h-24 shrink-0 rounded-xl overflow-hidden border border-gray-100 bg-gray-50">
                     <Image
                       src={item.product.images?.[0]?.url}
@@ -103,7 +147,6 @@ export default function CartPage() {
                     />
                   </div>
 
-                  {/* Details */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
                       <div>
@@ -128,7 +171,6 @@ export default function CartPage() {
                         )}
                       </div>
 
-                      {/* Qty control */}
                       <div className="flex items-center gap-0 border border-gray-200 rounded-xl overflow-hidden">
                         <button
                           onClick={() => updateQty(item._id, item.quantity - 1)}
@@ -153,7 +195,6 @@ export default function CartPage() {
                 </div>
               ))}
 
-              {/* Free delivery banner */}
               {subtotal < 499 && (
                 <div className="flex items-center gap-3 bg-[#e8f5e8] border border-[#c8e6c8] rounded-xl px-4 py-3 text-sm text-[#2d6a2d]">
                   <Tag size={15} />
@@ -167,7 +208,6 @@ export default function CartPage() {
               )}
             </div>
 
-            {/* Order summary */}
             <div className="w-full lg:w-80 shrink-0">
               <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm sticky top-24">
                 <h3 className="font-extrabold text-[#1a3d1a] text-base mb-4 pb-3 border-b border-gray-100">Order Summary</h3>
@@ -196,11 +236,11 @@ export default function CartPage() {
                 </div>
 
                 <button
-  onClick={() => router.push("/checkout")}
-  className="w-full mt-5 bg-[#2d6a2d] hover:bg-[#235423] text-white font-bold py-3 rounded-xl text-sm transition shadow-sm"
->
-  Proceed to Checkout
-</button>
+                  onClick={() => router.push("/checkout")}
+                  className="w-full mt-5 bg-[#2d6a2d] hover:bg-[#235423] text-white font-bold py-3 rounded-xl text-sm transition shadow-sm"
+                >
+                  Proceed to Checkout
+                </button>
 
                 <div className="flex items-center justify-center gap-2 mt-3 text-gray-400 text-xs">
                   🔒 Secure & Encrypted Payment

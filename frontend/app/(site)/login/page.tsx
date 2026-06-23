@@ -4,9 +4,9 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import axios from "axios";
 import toast from "react-hot-toast";
 import { API } from "@/lib/api";
+import { mergeGuestCartIfAny } from "@/lib/guestCart";
 import {
   Mail,
   Lock,
@@ -20,26 +20,10 @@ import {
 } from "lucide-react";
 
 const FEATURE_LIST = [
-  {
-    icon: <Shield size={20} className="text-[#2d6a2d]" />,
-    title: "100% Natural Products",
-    desc: "Pure and natural seeds with no additives.",
-  },
-  {
-    icon: <Award size={20} className="text-[#2d6a2d]" />,
-    title: "Premium Quality",
-    desc: "Carefully selected for the best quality.",
-  },
-  {
-    icon: <Truck size={20} className="text-[#2d6a2d]" />,
-    title: "Fast & Safe Delivery",
-    desc: "Quick delivery to your doorstep.",
-  },
-  {
-    icon: <CreditCard size={20} className="text-[#2d6a2d]" />,
-    title: "Secure Payments",
-    desc: "100% safe and secure transactions.",
-  },
+  { icon: <Shield size={20} className="text-[#2d6a2d]" />, title: "100% Natural Products", desc: "Pure and natural seeds with no additives." },
+  { icon: <Award size={20} className="text-[#2d6a2d]" />, title: "Premium Quality", desc: "Carefully selected for the best quality." },
+  { icon: <Truck size={20} className="text-[#2d6a2d]" />, title: "Fast & Safe Delivery", desc: "Quick delivery to your doorstep." },
+  { icon: <CreditCard size={20} className="text-[#2d6a2d]" />, title: "Secure Payments", desc: "100% safe and secure transactions." },
 ];
 
 export default function LoginPage() {
@@ -68,10 +52,15 @@ export default function LoginPage() {
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
 
+      // push any guest-cart items into the real backend cart
+      await mergeGuestCartIfAny(response.data.token);
+
+      // tells Navbar to refresh immediately (cart/wishlist counts, login state)
+      window.dispatchEvent(new Event("authChanged"));
+
       toast.success("Login Successful!");
 
       const user = response.data.user;
-
       if (user.role === "admin") {
         router.push("/admin");
       } else {
@@ -86,11 +75,8 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-[#f5f5ef] flex flex-col">
-      {/* ── Main ── */}
       <main className="flex-1 flex items-center justify-center px-4 py-8">
         <div className="w-full max-w-6xl flex flex-col lg:flex-row gap-10 items-center">
-
-          {/* ── Left hero ── */}
           <div className="hidden lg:flex flex-col flex-1 gap-8">
             <div>
               <h1 className="text-4xl xl:text-5xl font-extrabold text-[#1a3d1a] leading-tight">
@@ -115,7 +101,6 @@ export default function LoginPage() {
               ))}
             </ul>
 
-            {/* Seed image */}
             <div className="relative w-full h-64 xl:h-72 rounded-2xl overflow-hidden">
               <Image
                 src="/signup/signup.png"
@@ -127,7 +112,6 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* ── Right card ── */}
           <div className="w-full lg:w-[460px] bg-white rounded-2xl shadow-lg p-8">
             <h2 className="text-2xl font-bold text-[#1a3d1a]">Login to Your Account</h2>
             <p className="text-gray-400 text-sm mt-1 mb-6">
@@ -135,16 +119,10 @@ export default function LoginPage() {
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Email */}
               <div>
-                <label className="text-xs font-semibold text-gray-600 mb-1 block">
-                  Email Address
-                </label>
+                <label className="text-xs font-semibold text-gray-600 mb-1 block">Email Address</label>
                 <div className="relative">
-                  <Mail
-                    size={15}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                  />
+                  <Mail size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input
                     type="email"
                     name="email"
@@ -156,16 +134,10 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              {/* Password */}
               <div>
-                <label className="text-xs font-semibold text-gray-600 mb-1 block">
-                  Password
-                </label>
+                <label className="text-xs font-semibold text-gray-600 mb-1 block">Password</label>
                 <div className="relative">
-                  <Lock
-                    size={15}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                  />
+                  <Lock size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input
                     type={showPassword ? "text" : "password"}
                     name="password"
@@ -183,18 +155,13 @@ export default function LoginPage() {
                   </button>
                 </div>
 
-                {/* Forgot password */}
                 <div className="text-right mt-1">
-                  <Link
-                    href="/forgot-password"
-                    className="text-sm text-[#2d6a2d] font-semibold hover:underline"
-                  >
+                  <Link href="/forgot-password" className="text-sm text-[#2d6a2d] font-semibold hover:underline">
                     Forgot Password?
                   </Link>
                 </div>
               </div>
 
-              {/* Login button */}
               <button
                 type="submit"
                 disabled={loading}
@@ -203,27 +170,22 @@ export default function LoginPage() {
                 {loading ? "Logging in…" : "Login"}
               </button>
 
-              {/* OR divider */}
               <div className="flex items-center gap-3 my-1">
                 <div className="flex-1 h-px bg-gray-200" />
                 <span className="text-xs text-gray-400 font-medium">OR</span>
                 <div className="flex-1 h-px bg-gray-200" />
               </div>
 
-              {/* Security note */}
               <div className="flex items-start gap-3 border border-gray-100 rounded-xl p-4 bg-gray-50 mt-2">
                 <Shield size={22} className="text-[#2d6a2d] shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm font-semibold text-[#1a3d1a]">
-                    Your Security is Our Priority
-                  </p>
+                  <p className="text-sm font-semibold text-[#1a3d1a]">Your Security is Our Priority</p>
                   <p className="text-xs text-gray-400 mt-0.5">
                     We use advanced encryption to keep your information safe and secure.
                   </p>
                 </div>
               </div>
 
-              {/* Sign up link */}
               <p className="text-center text-sm text-gray-500 pt-1">
                 Don&apos;t have an account?{" "}
                 <Link href="/signup" className="text-[#2d6a2d] font-semibold hover:underline">

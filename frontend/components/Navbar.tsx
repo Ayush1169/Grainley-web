@@ -6,7 +6,7 @@ import { ShoppingCart, Heart, User, Search, Menu, X, ChevronDown } from "lucide-
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { toast } from "react-hot-toast/headless";
+import { getGuestCartCount } from "@/lib/guestCart";
 
 export default function Navbar() {
   const [cartCount, setCartCount] = useState(0);
@@ -16,20 +16,43 @@ export default function Navbar() {
   const [user, setUser] = useState<boolean>(false);
   const router = useRouter();
 
- useEffect(() => {
-  const token = localStorage.getItem("token");
+  useEffect(() => {
+    const loadCounts = () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        setUser(true);
+        fetchCounts();
+      } else {
+        setUser(false);
+        setCartCount(getGuestCartCount());
+        setWishlistCount(0);
+      }
+    };
 
-  if (token) {
-    setUser(true);
-    fetchCounts();
-  }
-}, []);
+    loadCounts();
+
+    // guest cart changed on a product page -> update the badge live
+    const handleGuestCartUpdate = () => {
+      if (!localStorage.getItem("token")) {
+        setCartCount(getGuestCartCount());
+      }
+    };
+
+    // fired right after login (and merge) so navbar refreshes immediately
+    window.addEventListener("guestCartUpdated", handleGuestCartUpdate);
+    window.addEventListener("authChanged", loadCounts);
+
+    return () => {
+      window.removeEventListener("guestCartUpdated", handleGuestCartUpdate);
+      window.removeEventListener("authChanged", loadCounts);
+    };
+  }, []);
 
   const fetchCounts = async () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) return;
-    
+
       const cartRes = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/cart`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -45,16 +68,17 @@ export default function Navbar() {
 
   const NAV_LINKS = [
     { label: "Makhana", href: "/products?category=makhana" },
-    { label: "Seeds", href: "/products?category=seeds" },
-    { label: "Superfoods", href: "/products?category=Superfoods" },
-    { label: "Natural Sweeteners", href: "/products?category=natural-sweeteners" },
-    { label: "Health Powders", href: "/products?category=health-powders" },
+    { label: "Chia Seeds", href: "/products?category=chia-seeds" },
+    { label: "Flax Seeds", href: "/products?category=flax-seeds" },
+    { label: "Pumpkin Seeds", href: "/products?category=pumpkin-seeds" },
+    { label: "Sunflower Seeds", href: "/products?category=sunflower-seeds" },
+    { label: "Mix Seeds", href: "/products?category=mix-seeds" },
+    { label: "Combo Packs", href: "/products?category=combo-packs" },
     { label: "Offers", href: "/offers", hot: true },
   ];
 
   return (
     <>
-      {/* Top bar */}
       <div className="bg-[#1a3d1a] text-white text-xs py-2 px-4 hidden md:block">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-6">
@@ -67,7 +91,6 @@ export default function Navbar() {
             <span>|</span>
             <Link href="/faq" className="hover:text-white transition">Help & Support</Link>
             <span>|</span>
-            {/* Clickable phone number — opens the device's dialer */}
             <a href="tel:+919919456600" className="hover:text-white transition">
               📞 +91-9919456600
             </a>
@@ -75,10 +98,8 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Main navbar */}
       <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center gap-4">
-          {/* Logo */}
           <Link href="/" className="flex items-center gap-2 shrink-0">
             <Image
               src="/logo/logo.png"
@@ -93,12 +114,10 @@ export default function Navbar() {
             </div>
           </Link>
 
-          {/* Category dropdown */}
           <div className="hidden lg:flex items-center gap-1 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 cursor-pointer hover:border-[#2d6a2d] transition shrink-0">
             All Categories <ChevronDown size={14} className="ml-1" />
           </div>
 
-          {/* Search */}
           <div className="flex-1 relative hidden md:block">
             <input
               type="text"
@@ -112,7 +131,6 @@ export default function Navbar() {
             </button>
           </div>
 
-          {/* Right icons */}
           <div className="flex items-center gap-4 ml-auto shrink-0">
             <Link href="/wishlist" className="relative flex flex-col items-center hidden md:flex">
               <Heart className="w-5 h-5 text-gray-600 hover:text-[#2d6a2d] transition" />
@@ -134,28 +152,20 @@ export default function Navbar() {
               <span className="text-[9px] text-gray-500 mt-0.5">Cart</span>
             </Link>
 
-            {
-  user ? (
-    <Link
-      href="/profile"
-      className="flex flex-col items-center hidden md:flex"
-    >
-      <User className="w-5 h-5 text-gray-600 hover:text-[#2d6a2d]" />
-      <span className="text-[9px] text-gray-500 mt-0.5">
-        My Account
-      </span>
-    </Link>
-  ) : (
-    <Link
-      href="/login"
-      className="bg-[#2d6a2d] text-white px-4 py-2 rounded-lg text-sm font-medium hidden md:block"
-    >
-      Login / Sign Up
-    </Link>
-  )
-}
+            {user ? (
+              <Link href="/profile" className="flex flex-col items-center hidden md:flex">
+                <User className="w-5 h-5 text-gray-600 hover:text-[#2d6a2d]" />
+                <span className="text-[9px] text-gray-500 mt-0.5">My Account</span>
+              </Link>
+            ) : (
+              <Link
+                href="/login"
+                className="bg-[#2d6a2d] text-white px-4 py-2 rounded-lg text-sm font-medium hidden md:block"
+              >
+                Login / Sign Up
+              </Link>
+            )}
 
-            {/* Mobile icons */}
             <Link href="/cart" className="relative md:hidden">
               <ShoppingCart className="w-5 h-5 text-gray-700" />
               {cartCount > 0 && (
@@ -171,7 +181,6 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Category nav strip */}
         <div className="hidden md:block border-t border-gray-100 bg-white">
           <div className="max-w-7xl mx-auto px-4 flex items-center gap-1 overflow-x-auto scrollbar-hide py-0.5">
             <Link
@@ -195,7 +204,6 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile menu */}
         {mobileOpen && (
           <div className="md:hidden bg-white border-t border-gray-100 px-4 py-4 space-y-3">
             <div className="relative">
@@ -234,9 +242,6 @@ export default function Navbar() {
               )}
             </Link>
 
-            {/* Account / Login section — was completely broken before:
-                it used "hidden md:flex" inside a mobile-only menu, which
-                made it invisible on the one screen size it needed to show on. */}
             {user ? (
               <Link
                 href="/profile"

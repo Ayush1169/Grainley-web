@@ -38,14 +38,16 @@ export default function CheckoutPage() {
   }, [selectedAddress, addresses]);
 
   const fetchCart = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/cart`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setCart(res.data.cart || []);
-    } catch (error) { console.log(error); }
-  };
+  try {
+    const token = localStorage.getItem("token");
+    const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/cart`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    // filter out items whose product was deleted from DB (populate returns null)
+    const validItems = (res.data.cart || []).filter((item: any) => item.product);
+    setCart(validItems);
+  } catch (error) { console.log(error); }
+};
 
   const fetchAddresses = async () => {
     try {

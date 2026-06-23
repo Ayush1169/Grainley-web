@@ -119,3 +119,46 @@ exports.removeCart = async (req, res) => {
 
   }
 };
+
+
+exports.mergeCart = async (req, res) => {
+  try {
+    const { items } = req.body; // [{ productId, quantity }]
+
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.status(200).json({ success: true, message: "Nothing to merge" });
+    }
+
+    for (const item of items) {
+      const { productId, quantity } = item;
+      if (!productId || !quantity) continue;
+
+      const existing = await Cart.findOne({
+        user: req.user.id,
+        product: productId,
+      });
+
+      if (existing) {
+        existing.quantity += quantity;
+        await existing.save();
+      } else {
+        await Cart.create({
+          user: req.user.id,
+          product: productId,
+          quantity,
+        });
+      }
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Cart merged",
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
