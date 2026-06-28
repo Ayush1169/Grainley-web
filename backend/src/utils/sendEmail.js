@@ -5,12 +5,19 @@ const sendEmail = async (email, otp) => {
     host: "smtp.gmail.com",
     port: 587,
     secure: false,
-    family: 4, // force IPv4 — Railway containers often lack outbound IPv6 routing
+    family: 4,
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 10000,
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
     },
   });
+
+  console.log("Verifying SMTP...");
+  await transporter.verify();
+  console.log("SMTP Verified");
 
   await transporter.sendMail({
     from: process.env.EMAIL_USER,
