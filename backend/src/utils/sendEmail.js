@@ -1,35 +1,57 @@
-const nodemailer = require("nodemailer");
+const https = require("https");
 
-const sendEmail = async (email, otp) => {
-  const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false,
-    family: 4,
-    connectionTimeout: 10000,
-    greetingTimeout: 10000,
-    socketTimeout: 10000,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
+const sendEmail = async (to, otp) => {
+  const data = JSON.stringify({
+    sender: {
+      name: "Grainley Foods",
+      email: process.env.EMAIL_USER,
     },
-  });
-
-  console.log("Verifying SMTP...");
-  await transporter.verify();
-  console.log("SMTP Verified");
-
-  await transporter.sendMail({
-    from: process.env.EMAIL_USER,
-    to: email,
+    to: [{ email: to }],
     subject: "OTP Verification",
-    html: `
-      <h2>Your OTP</h2>
+    htmlContent: `
+      <h2>Grainley Foods</h2>
+      <p>Your OTP is:</p>
       <h1>${otp}</h1>
+      <p>This OTP is valid for 5 minutes.</p>
     `,
   });
 
-  console.log("Email Sent");
+  return new Promise((resolve, reject) => {
+    const options = {
+      hostname: "api.brevo.com",
+      path: "/v3/smtp/email",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "api-key": process.env.BREVO_API_KEY,
+        "Content-Length": Buffer.byteLength(data),
+      },
+    };
+
+    const req = https.request(options, (res) => {
+      let body = "";
+
+      res.on("data", (chunk) => {
+        body += chunk;
+      });
+
+      res.on("end", () => {
+        console.log("Brevo Response:", res.statusCode, body);
+        
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          console.log("OTP Sent");
+          resolve(body);
+        } else {
+          reject(new Error(body));
+        }
+      });
+    });
+
+    req.on("error", reject);
+
+    req.write(data);
+    req.end();
+  });
 };
 
 module.exports = sendEmail;
